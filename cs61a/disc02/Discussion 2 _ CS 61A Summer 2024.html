@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<!-- saved from url=(0030)https://cs61a.org/disc/disc02/ -->
+<html lang="en" class="trancy-zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="description" content="CS 61A: Structure and Interpretation of Computer Programs">
+    <meta name="keywords" content="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS">
+    <meta name="author" content="Laryn Qi, Charlotte Le, Raymond Tan">
+    
+    <meta name="viewport" content="width=device-width">
+
+    <script src="./Discussion 2 _ CS 61A Summer 2024_files/jquery.min.js.下载"></script>
+    <script src="./Discussion 2 _ CS 61A Summer 2024_files/jquery.ba-throttle-debounce.min.js.下载"></script>
+    <script src="./Discussion 2 _ CS 61A Summer 2024_files/bootstrap.min.js.下载"></script>
+    <script src="./Discussion 2 _ CS 61A Summer 2024_files/hl.js.下载"></script>
+    <script src="./Discussion 2 _ CS 61A Summer 2024_files/toggledarkmode.js.下载"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="./Discussion 2 _ CS 61A Summer 2024_files/dark-mode.js.下载"></script>
+    <link rel="stylesheet" href="./Discussion 2 _ CS 61A Summer 2024_files/bootstrap.min.css">
+    <link rel="stylesheet" href="./Discussion 2 _ CS 61A Summer 2024_files/css">
+    <link rel="stylesheet" href="./Discussion 2 _ CS 61A Summer 2024_files/style.css">
+    <link rel="stylesheet" href="./Discussion 2 _ CS 61A Summer 2024_files/mono-blue.css">
+    <link rel="icon" href="https://cs61a.org/assets/images/favicon.ico">
+
+    
+
+<link rel="stylesheet" type="text/css" href="./Discussion 2 _ CS 61A Summer 2024_files/disc.css">
+
+
+    <title>
+Discussion 2 | CS 61A Summer 2024
+</title>
+  <script async="async" type="text/javascript" src="./Discussion 2 _ CS 61A Summer 2024_files/editor.main.js.下载"></script><script async="async" type="text/javascript" src="./Discussion 2 _ CS 61A Summer 2024_files/editor.main.nls.js.下载"></script><style type="text/css" media="screen" class="monaco-colors">.monaco-editor .minimap-slider, .monaco-editor .minimap-slider .minimap-slider-horizontal { background: rgba(121, 121, 121, 0.2); }
+.monaco-editor .minimap-slider:hover, .monaco-editor .minimap-slider:hover .minimap-slider-horizontal { background: rgba(100, 100, 100, 0.35); }
+.monaco-editor .minimap-slider.active, .monaco-editor .minimap-slider.active .minimap-slider-horizontal { background: rgba(191, 191, 191, 0.2); }
+.monaco-editor .minimap-shadow-visible { box-shadow: #000000 -6px 0 6px -6px inset; }
+.monaco-editor .scroll-decoration { box-shadow: #000000 0 6px 6px -6px inset; }
+.monaco-editor .focused .selected-text { background-color: #264f78; }
+.monaco-editor .selected-text { background-color: #3a3d41; }
+.monaco-editor, .monaco-editor-background, .monaco-editor .inputarea.ime-input { background-color: #1e1e1e; }
+.monaco-editor, .monaco-editor .inputarea.ime-input { color: #d4d4d4; }
+.monaco-editor .margin { background-color: #1e1e1e; }
+.monaco-editor .rangeHighlight { background-color: rgba(255, 255, 255, 0.04); }
+.monaco-editor .symbolHighlight { background-color: rgba(234, 92, 0, 0.33); }
+.vs-whitespace { color: rgba(227, 228, 226, 0.16) !important; }
+.monaco-editor .view-overlays .current-line { border: 2px solid #282828; }
+.monaco-editor .margin-view-overlays .current-line-margin { border: 2px solid #282828; }
+.monaco-editor .lines-content .cigr { box-shadow: 1px 0 0 0 #404040 inset; }
+.monaco-editor .lines-content .cigra { box-shadow: 1px 0 0 0 #707070 inset; }
+.monaco-editor .line-numbers { color: #858585; }
+.monaco-editor .current-line ~ .line-numbers { color: #c6c6c6; }
+.monaco-editor .view-ruler { box-shadow: 1px 0 0 0 #5a5a5a inset; }
+.monaco-editor .cursor { background-color: #aeafad; border-color: #aeafad; color: #515052; }
+.monaco-editor.vs .valueSetReplacement { outline: solid 2px #888888; }
+.monaco-editor .squiggly-error { background: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%206%203'%20enable-background%3D'new%200%200%206%203'%20height%3D'3'%20width%3D'6'%3E%3Cg%20fill%3D'%23f48771'%3E%3Cpolygon%20points%3D'5.5%2C0%202.5%2C3%201.1%2C3%204.1%2C0'%2F%3E%3Cpolygon%20points%3D'4%2C0%206%2C2%206%2C0.6%205.4%2C0'%2F%3E%3Cpolygon%20points%3D'0%2C2%201%2C3%202.4%2C3%200%2C0.6'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") repeat-x bottom left; }
+.monaco-editor .squiggly-warning { background: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%206%203'%20enable-background%3D'new%200%200%206%203'%20height%3D'3'%20width%3D'6'%3E%3Cg%20fill%3D'%23cca700'%3E%3Cpolygon%20points%3D'5.5%2C0%202.5%2C3%201.1%2C3%204.1%2C0'%2F%3E%3Cpolygon%20points%3D'4%2C0%206%2C2%206%2C0.6%205.4%2C0'%2F%3E%3Cpolygon%20points%3D'0%2C2%201%2C3%202.4%2C3%200%2C0.6'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") repeat-x bottom left; }
+.monaco-editor .squiggly-info { background: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%206%203'%20enable-background%3D'new%200%200%206%203'%20height%3D'3'%20width%3D'6'%3E%3Cg%20fill%3D'%2375beff'%3E%3Cpolygon%20points%3D'5.5%2C0%202.5%2C3%201.1%2C3%204.1%2C0'%2F%3E%3Cpolygon%20points%3D'4%2C0%206%2C2%206%2C0.6%205.4%2C0'%2F%3E%3Cpolygon%20points%3D'0%2C2%201%2C3%202.4%2C3%200%2C0.6'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") repeat-x bottom left; }
+.monaco-editor .squiggly-hint { background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20height%3D%223%22%20width%3D%2212%22%3E%3Cg%20fill%3D%22rgba(238%2C%20238%2C%20238%2C%200.7)%22%3E%3Ccircle%20cx%3D%221%22%20cy%3D%221%22%20r%3D%221%22%2F%3E%3Ccircle%20cx%3D%225%22%20cy%3D%221%22%20r%3D%221%22%2F%3E%3Ccircle%20cx%3D%229%22%20cy%3D%221%22%20r%3D%221%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") no-repeat bottom left; }
+.monaco-editor.showUnused .squiggly-inline-unnecessary { opacity: 0.667; }
+.monaco-editor .squiggly-inline-deprecated { text-decoration: line-through; text-decoration-color: #d4d4d4}
+.monaco-diff-editor .diff-review-line-number { color: #858585; }
+.monaco-diff-editor .diff-review-shadow { box-shadow: #000000 0 -6px 6px -6px inset; }
+.monaco-editor .line-insert, .monaco-editor .char-insert { background-color: rgba(155, 185, 85, 0.2); }
+.monaco-diff-editor .line-insert, .monaco-diff-editor .char-insert { background-color: rgba(155, 185, 85, 0.2); }
+.monaco-editor .inline-added-margin-view-zone { background-color: rgba(155, 185, 85, 0.2); }
+.monaco-editor .line-delete, .monaco-editor .char-delete { background-color: rgba(255, 0, 0, 0.2); }
+.monaco-diff-editor .line-delete, .monaco-diff-editor .char-delete { background-color: rgba(255, 0, 0, 0.2); }
+.monaco-editor .inline-deleted-margin-view-zone { background-color: rgba(255, 0, 0, 0.2); }
+.monaco-diff-editor.side-by-side .editor.modified { box-shadow: -6px 0 5px -5px #000000; }
+.monaco-editor .bracket-match { background-color: rgba(0, 100, 0, 0.1); }
+.monaco-editor .bracket-match { border: 1px solid #888888; }
+
+		.monaco-editor .contentWidgets .codicon-lightbulb {
+			color: #ffcc00;
+		}
+
+		.monaco-editor .contentWidgets .codicon-lightbulb-autofix {
+			color: #75beff;
+		}
+.monaco-editor .codelens-decoration { color: #999999; }
+.monaco-editor .codelens-decoration .codicon { color: #999999; }
+.monaco-editor .codelens-decoration > a:hover { color: #4e94ce !important; }
+.monaco-editor .codelens-decoration > a:hover .codicon { color: #4e94ce !important; }
+.codicon-symbol-array { color: #cccccc !important; }
+.codicon-symbol-boolean { color: #cccccc !important; }
+.codicon-symbol-class { color: #ee9d28 !important; }
+.codicon-symbol-method { color: #b180d7 !important; }
+.codicon-symbol-color { color: #cccccc !important; }
+.codicon-symbol-constant { color: #cccccc !important; }
+.codicon-symbol-constructor { color: #b180d7 !important; }
+
+			.codicon-symbol-value,.codicon-symbol-enum { color: #ee9d28 !important; }
+.codicon-symbol-enum-member { color: #75beff !important; }
+.codicon-symbol-event { color: #ee9d28 !important; }
+.codicon-symbol-field { color: #75beff !important; }
+.codicon-symbol-file { color: #cccccc !important; }
+.codicon-symbol-folder { color: #cccccc !important; }
+.codicon-symbol-function { color: #b180d7 !important; }
+.codicon-symbol-interface { color: #75beff !important; }
+.codicon-symbol-key { color: #cccccc !important; }
+.codicon-symbol-keyword { color: #cccccc !important; }
+.codicon-symbol-module { color: #cccccc !important; }
+.codicon-symbol-namespace { color: #cccccc !important; }
+.codicon-symbol-null { color: #cccccc !important; }
+.codicon-symbol-number { color: #cccccc !important; }
+.codicon-symbol-object { color: #cccccc !important; }
+.codicon-symbol-operator { color: #cccccc !important; }
+.codicon-symbol-package { color: #cccccc !important; }
+.codicon-symbol-property { color: #cccccc !important; }
+.codicon-symbol-reference { color: #cccccc !important; }
+.codicon-symbol-snippet { color: #cccccc !important; }
+.codicon-symbol-string { color: #cccccc !important; }
+.codicon-symbol-struct { color: #cccccc !important; }
+.codicon-symbol-text { color: #cccccc !important; }
+.codicon-symbol-type-parameter { color: #cccccc !important; }
+.codicon-symbol-unit { color: #cccccc !important; }
+.codicon-symbol-variable { color: #75beff !important; }
+.monaco-editor .findOptionsWidget { background-color: #252526; }
+.monaco-editor .findOptionsWidget { color: #cccccc; }
+.monaco-editor .findOptionsWidget { box-shadow: 0 2px 8px #000000; }
+.monaco-editor .findMatch { background-color: rgba(234, 92, 0, 0.33); }
+.monaco-editor .currentFindMatch { background-color: #515c6a; }
+.monaco-editor .findScope { background-color: rgba(58, 61, 65, 0.4); }
+.monaco-editor .find-widget { background-color: #252526; }
+.monaco-editor .find-widget { box-shadow: 0 2px 8px #000000; }
+.monaco-editor .find-widget { color: #cccccc; }
+.monaco-editor .find-widget.no-results .matchesCount { color: #f48771; }
+.monaco-editor .find-widget .monaco-sash { background-color: #454545; width: 3px !important; margin-left: -4px;}
+.monaco-editor .find-widget .monaco-inputbox.synthetic-focus { outline-color: rgba(14, 99, 156, 0.8); }
+.monaco-editor .folded-background { background-color: rgba(38, 79, 120, 0.3); }
+.monaco-editor .detected-link-active { color: #4e94ce !important; }
+.monaco-editor .monaco-editor-overlaymessage .anchor { border-top-color: #007acc; }
+.monaco-editor .monaco-editor-overlaymessage .message { border: 1px solid #007acc; }
+.monaco-editor .monaco-editor-overlaymessage .message { background-color: #063b49; }
+.monaco-editor .parameter-hints-widget { border: 1px solid #454545; }
+.monaco-editor .parameter-hints-widget.multiple .body { border-left: 1px solid rgba(69, 69, 69, 0.5); }
+.monaco-editor .parameter-hints-widget .signature.has-docs { border-bottom: 1px solid rgba(69, 69, 69, 0.5); }
+.monaco-editor .parameter-hints-widget { background-color: #252526; }
+.monaco-editor .parameter-hints-widget a { color: #3794ff; }
+.monaco-editor .parameter-hints-widget { color: #cccccc; }
+.monaco-editor .parameter-hints-widget code { background-color: rgba(10, 10, 10, 0.4); }
+.monaco-editor .suggest-widget .monaco-list .monaco-list-row .monaco-highlighted-label .highlight { color: #0097fb; }
+.monaco-editor .suggest-widget { color: #d4d4d4; }
+.monaco-editor .suggest-widget a { color: #3794ff; }
+.monaco-editor .suggest-widget code { background-color: rgba(10, 10, 10, 0.4); }
+.monaco-editor .focused .selectionHighlight { background-color: rgba(173, 214, 255, 0.15); }
+.monaco-editor .selectionHighlight { background-color: rgba(173, 214, 255, 0.07); }
+.monaco-editor .wordHighlight { background-color: rgba(87, 87, 87, 0.72); }
+.monaco-editor .wordHighlightStrong { background-color: rgba(0, 73, 114, 0.72); }
+.monaco-editor .accessibilityHelpWidget { background-color: #252526; }
+.monaco-editor .accessibilityHelpWidget { color: #cccccc; }
+.monaco-editor .accessibilityHelpWidget { box-shadow: 0 2px 8px #000000; }
+.monaco-editor .tokens-inspect-widget { border: 1px solid #454545; }
+.monaco-editor .tokens-inspect-widget .tokens-inspect-separator { background-color: #454545; }
+.monaco-editor .tokens-inspect-widget { background-color: #252526; }
+.monaco-editor .tokens-inspect-widget { color: #cccccc; }
+.monaco-editor .reference-zone-widget .ref-tree .referenceMatch .highlight { background-color: rgba(234, 92, 0, 0.3); }
+.monaco-editor .reference-zone-widget .preview .reference-decoration { background-color: rgba(255, 143, 0, 0.6); }
+.monaco-editor .reference-zone-widget .ref-tree { background-color: #252526; }
+.monaco-editor .reference-zone-widget .ref-tree { color: #bbbbbb; }
+.monaco-editor .reference-zone-widget .ref-tree .reference-file { color: #ffffff; }
+.monaco-editor .reference-zone-widget .ref-tree .monaco-list:focus .monaco-list-rows > .monaco-list-row.selected:not(.highlighted) { background-color: rgba(51, 153, 255, 0.2); }
+.monaco-editor .reference-zone-widget .ref-tree .monaco-list:focus .monaco-list-rows > .monaco-list-row.selected:not(.highlighted) { color: #ffffff !important; }
+.monaco-editor .reference-zone-widget .preview .monaco-editor .monaco-editor-background,.monaco-editor .reference-zone-widget .preview .monaco-editor .inputarea.ime-input {	background-color: #001f33;}
+.monaco-editor .reference-zone-widget .preview .monaco-editor .margin {	background-color: #001f33;}
+.monaco-editor .goto-definition-link { color: #4e94ce !important; }
+
+			.monaco-editor .zone-widget .codicon-error,
+			.markers-panel .marker-icon.codicon-error,
+			.extensions-viewlet > .extensions .codicon-error,
+			.monaco-dialog-box .dialog-message-row .codicon-error {
+				color: #f48771;
+			}
+		
+
+			.monaco-editor .zone-widget .codicon-warning,
+			.markers-panel .marker-icon.codicon-warning,
+			.extensions-viewlet > .extensions .codicon-warning,
+			.extension-editor .codicon-warning,
+			.monaco-dialog-box .dialog-message-row .codicon-warning {
+				color: #cca700;
+			}
+		
+
+			.monaco-editor .zone-widget .codicon-info,
+			.markers-panel .marker-icon.codicon-info,
+			.extensions-viewlet > .extensions .codicon-info,
+			.extension-editor .codicon-info,
+			.monaco-dialog-box .dialog-message-row .codicon-info {
+				color: #75beff;
+			}
+		
+.monaco-editor .marker-widget a { color: #3794ff; }
+.monaco-editor .marker-widget a.code-link span:hover { color: #3794ff; }
+.monaco-editor-hover .hover-contents a.code-link span:hover { color: #3794ff; }
+.monaco-editor .hoverHighlight { background-color: rgba(38, 79, 120, 0.25); }
+.monaco-editor .monaco-editor-hover { background-color: #252526; }
+.monaco-editor .monaco-editor-hover { border: 1px solid #454545; }
+.monaco-editor .monaco-editor-hover .hover-row:not(:first-child):not(:empty) { border-top: 1px solid rgba(69, 69, 69, 0.5); }
+.monaco-editor .monaco-editor-hover hr { border-top: 1px solid rgba(69, 69, 69, 0.5); }
+.monaco-editor .monaco-editor-hover hr { border-bottom: 0px solid rgba(69, 69, 69, 0.5); }
+.monaco-editor .monaco-editor-hover a { color: #3794ff; }
+.monaco-editor .monaco-editor-hover { color: #cccccc; }
+.monaco-editor .monaco-editor-hover .hover-row .actions { background-color: #2c2c2d; }
+.monaco-editor .monaco-editor-hover code { background-color: rgba(10, 10, 10, 0.4); }
+.monaco-editor .snippet-placeholder { background-color: rgba(124, 124, 124, 0.3); outline-color: transparent; }
+.monaco-editor .finish-snippet-placeholder { background-color: transparent; outline-color: #525252; }
+
+.mtk1 { color: #d4d4d4; }
+.mtk2 { color: #1e1e1e; }
+.mtk3 { color: #cc6666; }
+.mtk4 { color: #9cdcfe; }
+.mtk5 { color: #ce9178; }
+.mtk6 { color: #b5cea8; }
+.mtk7 { color: #608b4e; }
+.mtk8 { color: #569cd6; }
+.mtk9 { color: #dcdcdc; }
+.mtk10 { color: #808080; }
+.mtk11 { color: #f44747; }
+.mtk12 { color: #c586c0; }
+.mtk13 { color: #a79873; }
+.mtk14 { color: #dd6a6f; }
+.mtk15 { color: #5bb498; }
+.mtk16 { color: #909090; }
+.mtk17 { color: #778899; }
+.mtk18 { color: #ff00ff; }
+.mtk19 { color: #b46695; }
+.mtk20 { color: #ff0000; }
+.mtk21 { color: #4f76ac; }
+.mtk22 { color: #3dc9b0; }
+.mtk23 { color: #74b0df; }
+.mtk24 { color: #4864aa; }
+.mtki { font-style: italic; }
+.mtkb { font-weight: bold; }
+.mtku { text-decoration: underline; text-underline-position: under; }</style><style type="text/css" media="screen">
+		.monaco-editor .codelens-decoration.ee1f61 { height: 21px; line-height: 19px; font-size: 13px; padding-right: 6px;}
+		.monaco-editor .codelens-decoration.ee1f61 > a > .codicon { line-height: 19px; font-size: 13px; }
+		</style><script async="async" type="text/javascript" src="./Discussion 2 _ CS 61A Summer 2024_files/python.js.下载"></script><style type="text/css" media="screen">
+		.monaco-editor .codelens-decoration.ee1f62 { height: 21px; line-height: 19px; font-size: 13px; padding-right: 6px;}
+		.monaco-editor .codelens-decoration.ee1f62 > a > .codicon { line-height: 19px; font-size: 13px; }
+		</style><style type="text/css" media="screen">
+		.monaco-editor .codelens-decoration.ee1f63 { height: 21px; line-height: 19px; font-size: 13px; padding-right: 6px;}
+		.monaco-editor .codelens-decoration.ee1f63 > a > .codicon { line-height: 19px; font-size: 13px; }
+		</style></head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="https://cs61a.org/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="./Discussion 2 _ CS 61A Summer 2024_files/logo.png">
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="https://cs61a.org/office-hours">Weekly Schedule</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="https://cs61a.org/disc/disc02/#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                External Websites
+                <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="https://oh.cs61a.org/">Office Hours Queue</a></li>
+                <li><a href="https://pythontutor.com/cp/composingprograms.html">Python Tutor</a></li>
+                <li><a href="https://code.cs61a.org/">Online Code Editor</a></li>
+                <li><a href="https://www.composingprograms.com/">Textbook</a></li>
+                <li><a href="https://edstem.org/us/courses/59836/discussion/">Ed</a></li>
+                <li><a href="https://sections.cs61a.org/">Sections Tool</a></li>
+              </ul>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="https://cs61a.org/disc/disc02/#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Forms
+                <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="https://go.cs61a.org/extensions">Request an Extension</a></li>
+                <li><a href="https://go.cs61a.org/regrades">Request a Regrade</a></li>
+              </ul>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="https://cs61a.org/disc/disc02/#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Resources
+                <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="https://go.cs61a.org/debugging-guide">Debugging Guide</a></li>
+                <li><a href="https://cs61a.org/articles/studying">Studying Guide</a></li>
+                <li><a href="https://cs61a.org/articles/composition">Composition Guide</a></li>
+                <li><a href="https://cs61a.org/articles/pair-programming">Pair Programming Guide</a></li>
+                <li><a href="https://cs61a.org/resources/">Past Exams &amp; Websites</a></li>
+                <li><a href="https://cs61a.org/articles/campus-res/">Department and Campus</a></li>
+                <li><a href="https://cs61a.org/articles/advice/">Advice from Former Students</a></li>
+              </ul>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="https://cs61a.org/disc/disc02/#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+                <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="https://cs61a.org/instructor">Instructors</a></li>
+                <li><a href="https://cs61a.org/staff">TAs &amp; Tutors</a></li>
+                <li><a href="https://cs61a.org/contact/">Contact</a></li>
+              </ul>
+            </li>
+            <li><a href="https://cs61a.org/articles/about">Syllabus</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class="row">
+  <div class="col-md-9">
+    <header>
+      <h1>
+        
+Discussion 2: Environment Diagrams, Higher-Order Functions
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="https://cs61a.org/disc/disc02/disc02.pdf" class="label label-outline">disc02.pdf</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+
+<!-- <div class="alert storable-login-status"></div> -->
+
+
+    
+<!--
+Pick someone in your group to <a href="https://cs61a.org/articles/discord">join Discord</a>.
+It's fine if multiple people join, but one is enough.
+
+Now switch to Pensieve:
+
+<ul>
+  <li><strong>Everyone</strong>: Go to <a href="http://discuss.pensieve.co">discuss.pensieve.co</a> and log in with your @berkeley.edu email, then enter your group number. (Your group number is the number of your Discord channel.)</li>
+</ul>
+
+Once you're on Pensieve, you don't need to return to this page; Pensieve has all the same content (but more features). If for some reason Penseive doesn't work, return to this page and continue with the discussion.
+
+Post in the <code>#help</code> channel on <a href="https://cs61a.org/articles/discord/">Discord</a> if you have trouble. -->
+
+
+<h1 id="getting-started">Getting Started</h1>
+
+
+
+
+<p>Say your name and a city (or place) that you like, which is not Berkeley and is not where you have lived. Feel free to share why you like it.</p>
+
+<p><strong>VERY IMPORTANT:</strong> In this discussion, don't <!-- press *Check Answer* or -->run any Python code until your whole group is sure that the answer is right.  Your goal should be to have all checks pass the first time! Figure things out and check your work by <em>thinking</em> about what your code will do. Not sure? Talk to your group!  (You won't get to run Python during the midterm, so get used to solving problems without it now.)</p>
+
+
+<h3 id="q1-warm-up">Q1: Warm Up</h3>
+
+
+<p>What is the value of <code>result</code> after executing <code>result = (lambda x: 2 * (lambda x: 3)(4) * x)(5)</code>? Talk about it with your whole group and make sure you all agree before anybody tries running the code in Python.</p>
+
+
+<br>
+
+
+<h1 id="environment-diagrams">Environment Diagrams</h1>
+
+
+
+
+<p xt-marked="ok">An <strong>environment diagram</strong> keeps track of names and their values in <xt-mark w="frame" style="color: #ff8861 !important">frames</xt-mark>,
+which are drawn as boxes.</p>
+
+
+<h3 id="q2-bottles">Q2: Bottles</h3>
+
+
+<p>Answer the following questions with your group. Step
+through the diagram to check your answers.</p>
+
+<p xt-marked="ok">1) What determines how many different <xt-mark w="frame" style="color: #ff8861 !important">frames</xt-mark> appear in an environment diagram? <br>
+a) The number of functions defined in the code <br>
+b) The number of call expressions in the code <br>
+c) The number of return statements in the code <br>
+d) The number of times user-defined functions are called when running the code <br></p>
+
+<p xt-marked="ok">2) What happens to the return value of <code>pass_it(bottles)</code>? <br>
+a) It is used as the new value of <code>remaining</code> in the global <xt-mark w="frame" style="color: #ff8861 !important">frame</xt-mark> <br>
+b) It is used as the new value of <code>bottles</code> in the global <xt-mark w="frame" style="color: #ff8861 !important">frame</xt-mark> <br>
+c) It is used as the new value of <code>pass_it</code> in the global <xt-mark w="frame" style="color: #ff8861 !important">frame</xt-mark> <br>
+d) None of the above <br></p>
+
+<p xt-marked="ok">3) What effect does the line <code>bottles = 98</code> have on the global <xt-mark w="frame" style="color: #ff8861 !important">frame</xt-mark>? <br>
+a) It temporarily changes the value bound to <code>bottles</code> in the global <xt-mark w="frame" style="color: #ff8861 !important">frame</xt-mark>. <br>
+b) It permanently changes the value bound to <code>bottles</code> in the global <xt-mark w="frame" style="color: #ff8861 !important">frame</xt-mark>. <br>
+c) It has no effect on the global <xt-mark w="frame" style="color: #ff8861 !important">frame</xt-mark>. <br></p>
+
+
+            <iframe width="800" height="460" frameborder="0" src="./Discussion 2 _ CS 61A Summer 2024_files/iframe-embed.html">
+            </iframe>
+        
+
+
+<h3 id="q3-double-trouble">Q3: Double Trouble</h3>
+
+
+<p>Draw the environment diagram on paper or a whiteboard (without having the
+computer draw it for you)! Then, check your work by stepping through the
+diagram.</p>
+
+
+            <iframe width="800" height="460" frameborder="0" src="./Discussion 2 _ CS 61A Summer 2024_files/iframe-embed(1).html">
+            </iframe>
+        
+
+
+
+
+<h1 id="call-expressions">Call Expressions</h1>
+
+
+
+
+<p>Draw an environment diagram for the code below. You can use paper or a tablet or the whiteboard. Talk to your group about how you are going to draw it, then go through each step <em>together</em>. Then, step through the diagram to check your work.</p>
+
+
+            <iframe width="800" height="460" frameborder="0" src="./Discussion 2 _ CS 61A Summer 2024_files/iframe-embed(2).html">
+            </iframe>
+        
+
+<p>Here's a blank diagram in case you're using a tablet:</p>
+
+<p><img class="img-responsive center-block" src="./Discussion 2 _ CS 61A Summer 2024_files/A9nnHPb.png" alt="template" width="" height=""></p>
+
+<p>If you have questions or are confused, feel free to ask staff!</p>
+
+<div class="page-break"></div>
+
+
+<h1 id="higher-order-functions">Higher-Order Functions</h1>
+
+
+
+
+<p>Remember the problem-solving approach from last discussion; it works just as well for implementing higher-order functions.</p>
+
+<ol>
+  <li>Pick an example input and corresponding output. <em>(This time it might be a function.)</em></li>
+  <li>Describe a process (in English) that computes the output from the input using simple steps.</li>
+  <li>Figure out what additional names you'll need to carry out this process.</li>
+  <li>Implement the process in code using those additional names.</li>
+  <li>Determine whether the implementation really works on your original example.</li>
+  <li>Determine whether the implementation really works on other examples. (If not, you might need to revise step 2.)</li>
+</ol>
+
+
+<h3 id="q4-make-keeper">Q4: Make Keeper</h3>
+
+
+<p>Implement <code>make_keeper</code>, which takes a positive integer <code>n</code> and returns a
+function <code>f</code> that takes as its argument another one-argument function <code>cond</code>.
+When <code>f</code> is called on <code>cond</code>, it prints out the integers from 1 to <code>n</code>
+(including <code>n</code>) for which <code>cond</code> returns a true value when called on each of
+those integers. Each integer is printed on a separate line.</p>
+
+
+            <div class="monaco-storable" id="make_keeper-input" style="height:486px;" data-keybinding-context="1" data-mode-id="python"><div class="monaco-editor no-user-select  showUnused vs-dark" data-uri="inmemory://model/1" style="width: 698px; height: 486px;"><div data-mprt="3" class="overflow-guard" style="width: 698px; height: 486px;"><div class="margin" role="presentation" aria-hidden="true" style="position: absolute; transform: translate3d(0px, 0px, 0px); contain: strict; top: 0px; height: 486px; width: 64px;"><div class="glyph-margin" style="left: 0px; width: 0px; height: 486px;"></div><div class="margin-view-zones" role="presentation" aria-hidden="true" style="position: absolute;"></div><div class="margin-view-overlays" role="presentation" aria-hidden="true" style="position: absolute; width: 64px; font-family: Consolas, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; font-feature-settings: &quot;liga&quot; 0, &quot;calt&quot; 0; line-height: 19px; letter-spacing: 0px; height: 486px;"><div style="position:absolute;top:0px;width:100%;height:19px;"><div class="cldr codicon codicon-chevron-down" style="left:38px;width:26px;"></div><div class="line-numbers" style="left:0px;width:38px;">1</div></div><div style="position:absolute;top:19px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">2</div></div><div style="position:absolute;top:38px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">3</div></div><div style="position:absolute;top:57px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">4</div></div><div style="position:absolute;top:76px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">5</div></div><div style="position:absolute;top:95px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">6</div></div><div style="position:absolute;top:114px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">7</div></div><div style="position:absolute;top:133px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">8</div></div><div style="position:absolute;top:152px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">9</div></div><div style="position:absolute;top:171px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">10</div></div><div style="position:absolute;top:190px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">11</div></div><div style="position:absolute;top:209px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">12</div></div><div style="position:absolute;top:228px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">13</div></div><div style="position:absolute;top:247px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">14</div></div><div style="position:absolute;top:266px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">15</div></div><div style="position:absolute;top:285px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">16</div></div><div style="position:absolute;top:304px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">17</div></div><div style="position:absolute;top:323px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">18</div></div><div style="position:absolute;top:342px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">19</div></div><div style="position:absolute;top:361px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">20</div></div></div></div><div class="monaco-scrollable-element editor-scrollable vs-dark" role="presentation" data-mprt="5" style="position: absolute; overflow: hidden; left: 64px; width: 634px; height: 486px;"><div class="lines-content monaco-editor-background" style="position: absolute; overflow: hidden; width: 1e+06px; height: 1e+06px; transform: translate3d(0px, 0px, 0px); contain: strict; top: 0px; left: 0px;"><div class="view-overlays" role="presentation" aria-hidden="true" style="position: absolute; height: 0px; width: 634px;"><div style="position:absolute;top:0px;width:100%;height:19px;"></div><div style="position:absolute;top:19px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:38px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:57px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:76px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:95px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:114px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:133px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:152px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:171px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:190px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:209px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:228px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:247px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:266px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:285px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:304px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:323px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:342px;width:100%;height:19px;"></div><div style="position:absolute;top:361px;width:100%;height:19px;"></div></div><div role="presentation" aria-hidden="true" class="view-rulers"></div><div class="view-zones" role="presentation" aria-hidden="true" style="position: absolute;"></div><div class="view-lines" role="presentation" aria-hidden="true" data-mprt="7" style="position: absolute; font-family: Consolas, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; font-feature-settings: &quot;liga&quot; 0, &quot;calt&quot; 0; line-height: 19px; letter-spacing: 0px; width: 634px; height: 486px;"><div style="top:0px;height:19px;" class="view-line"><span><span class="mtk8">def</span><span class="mtk1">&nbsp;make_keeper</span><span class="mtk9">(</span><span class="mtk1">n</span><span class="mtk9">):</span></span></div><div style="top:19px;height:19px;" class="view-line"><span><span class="mtk1">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="mtk5">"""Returns&nbsp;a&nbsp;function&nbsp;that&nbsp;takes&nbsp;one&nbsp;parameter&nbsp;con</span><span class="mtk5">d&nbsp;and&nbsp;prints</span></span></div><div style="top:38px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;out&nbsp;all&nbsp;integers&nbsp;1..i..n&nbsp;where&nbsp;calling&nbsp;cond(i)</span><span class="mtk5">&nbsp;returns&nbsp;True.</span></span></div><div style="top:57px;height:19px;" class="view-line"><span><span>&nbsp;</span></span></div><div style="top:76px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;def&nbsp;is_even(x):&nbsp;#&nbsp;Even&nbsp;numbers&nbsp;have&nbsp;remain</span><span class="mtk5">der&nbsp;0&nbsp;when&nbsp;divided&nbsp;by&nbsp;2.</span></span></div><div style="top:95px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;x&nbsp;%&nbsp;2&nbsp;==&nbsp;0</span></span></div><div style="top:114px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;make_keeper(5)(is_even)</span></span></div><div style="top:133px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;2</span></span></div><div style="top:152px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;4</span></span></div><div style="top:171px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;make_keeper(5)(lambda&nbsp;x:&nbsp;True)</span></span></div><div style="top:190px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;1</span></span></div><div style="top:209px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;2</span></span></div><div style="top:228px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;3</span></span></div><div style="top:247px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;4</span></span></div><div style="top:266px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;5</span></span></div><div style="top:285px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;make_keeper(5)(lambda&nbsp;x:&nbsp;False)&nbsp;&nbsp;#&nbsp;Nothing</span><span class="mtk5">&nbsp;is&nbsp;printed</span></span></div><div style="top:304px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;"""</span></span></div><div style="top:323px;height:19px;" class="view-line"><span><span class="mtk1">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="mtk5">"***&nbsp;YOUR&nbsp;CODE&nbsp;HERE&nbsp;***"</span></span></div><div style="top:342px;height:19px;" class="view-line"><span><span>&nbsp;</span></span></div><div style="top:361px;height:19px;" class="view-line"><span><span>&nbsp;</span></span></div></div><div data-mprt="1" class="contentWidgets" style="position: absolute; top: 0px;"></div><div role="presentation" aria-hidden="true" class="cursors-layer cursor-line-style cursor-solid"><div class="cursor " style="height: 19px; top: 0px; left: 0px; font-family: Consolas, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; font-feature-settings: &quot;liga&quot; 0, &quot;calt&quot; 0; line-height: 19px; letter-spacing: 0px; display: block; visibility: hidden; width: 1.92308px;"></div></div></div><div role="presentation" aria-hidden="true" class="invisible scrollbar horizontal" style="position: absolute; width: 620px; height: 10px; left: 0px; bottom: 0px;"><div class="slider" style="position: absolute; top: 0px; left: 0px; height: 10px; transform: translate3d(0px, 0px, 0px); contain: strict; width: 620px;"></div></div><canvas class="decorationsOverviewRuler" aria-hidden="true" width="36" height="1263" style="position: absolute; transform: translate3d(0px, 0px, 0px); contain: strict; top: 0px; right: 0px; width: 14px; height: 486px;"></canvas><div role="presentation" aria-hidden="true" class="invisible scrollbar vertical" style="position: absolute; width: 14px; height: 486px; right: 0px; top: 0px;"><div class="slider" style="position: absolute; top: 0px; left: 0px; width: 14px; transform: translate3d(0px, 0px, 0px); contain: strict; height: 486px;"></div></div></div><div role="presentation" aria-hidden="true" style="width: 698px;"></div><textarea data-mprt="6" class="inputarea" wrap="off" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" aria-label="Editor content;Press Alt+F1 for Accessibility Options." role="textbox" aria-multiline="true" aria-haspopup="false" aria-autocomplete="both" style="font-family: Consolas, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; font-feature-settings: &quot;liga&quot; 0, &quot;calt&quot; 0; line-height: 19px; letter-spacing: 0px; top: 0px; left: 64px; width: 1px; height: 1px;"></textarea><div style="position: absolute; top: 0px; left: 0px; width: 0px; height: 0px;"></div><div data-mprt="4" class="overlayWidgets" style="width: 698px;"><div class="accessibilityHelpWidget" role="dialog" aria-hidden="true" widgetid="editor.contrib.accessibilityHelpWidget" style="display: none; position: absolute;"><div role="document"></div></div><div class="monaco-editor-hover hidden" aria-hidden="true" role="presentation" widgetid="editor.contrib.modesGlyphHoverWidget" style="position: absolute;"></div></div><div data-mprt="8" class="minimap slider-mouseover" role="presentation" aria-hidden="true" style="position: absolute; left: 0px; width: 0px; height: 486px;"><div class="minimap-shadow-hidden" style="height: 486px;"></div><canvas width="0" height="1263" style="position: absolute; left: 0px; width: 0px; height: 485.769px;"></canvas><canvas class="minimap-decorations-layer" width="0" height="1263" style="position: absolute; left: 0px; width: 0px; height: 485.769px;"></canvas><div class="minimap-slider" style="position: absolute; transform: translate3d(0px, 0px, 0px); contain: strict; width: 0px;"><div class="minimap-slider-horizontal" style="position: absolute; width: 0px; height: 0px;"></div></div></div></div><div data-mprt="2" class="overflowingContentWidgets"><div class="monaco-editor rename-box" widgetid="__renameInputWidget" style="background-color: rgb(37, 37, 38); box-shadow: rgb(0, 0, 0) 0px 2px 8px; color: rgb(204, 204, 204); position: absolute; visibility: hidden; max-width: 1134px;"><input class="rename-input" type="text" aria-label="Rename input. Type new name and press Enter to commit." style="font-family: Consolas, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; background-color: rgb(60, 60, 60); border-width: 0px; border-style: none;"><div class="rename-label" style="font-size: 11.2px;">Enter to Rename, Shift+Enter to Preview</div></div><div class="editor-widget suggest-widget" widgetid="editor.widget.suggestWidget" style="position: absolute; visibility: inherit; max-width: 1134px; top: 22px; left: 64px;" monaco-visible-content-widget="true"><div class="message" aria-hidden="true" style="display: none; background-color: rgb(37, 37, 38); border-color: rgb(69, 69, 69);"></div><div class="tree" aria-hidden="true" style="display: none; background-color: rgb(37, 37, 38); border-color: rgb(69, 69, 69);"><div class="monaco-list list_id_1" tabindex="0" role="tree"><div class="monaco-scrollable-element " role="presentation" style="position: relative; overflow: hidden;"><div class="monaco-list-rows" style="transform: translate3d(0px, 0px, 0px); overflow: hidden;"></div><div role="presentation" aria-hidden="true" class="invisible scrollbar horizontal" style="position: absolute;"><div class="slider" style="position: absolute; top: 0px; left: 0px; height: 10px; transform: translate3d(0px, 0px, 0px); contain: strict;"></div></div><div role="presentation" aria-hidden="true" class="invisible scrollbar vertical" style="position: absolute;"><div class="slider" style="position: absolute; top: 0px; left: 0px; width: 10px; transform: translate3d(0px, 0px, 0px); contain: strict;"></div></div></div><style type="text/css" media="screen">.monaco-list.list_id_1:focus .monaco-list-row.focused { background-color: #062f4a; }
+.monaco-list.list_id_1:focus .monaco-list-row.focused:hover { background-color: #062f4a; }
+.monaco-list.list_id_1:focus .monaco-list-row.selected { background-color: #084066; }
+.monaco-list.list_id_1:focus .monaco-list-row.selected:hover { background-color: #084066; }
+.monaco-list.list_id_1:focus .monaco-list-row.selected { color: #ffffff; }
+
+				.monaco-drag-image,
+				.monaco-list.list_id_1:focus .monaco-list-row.selected.focused { background-color: #094771; }
+			
+
+				.monaco-drag-image,
+				.monaco-list.list_id_1:focus .monaco-list-row.selected.focused { color: #ffffff; }
+			
+.monaco-list.list_id_1 .monaco-list-row.focused { background-color:  #062f4a; }
+.monaco-list.list_id_1 .monaco-list-row.focused:hover { background-color:  #062f4a; }
+.monaco-list.list_id_1 .monaco-list-row.selected { background-color:  #37373d; }
+.monaco-list.list_id_1 .monaco-list-row.selected:hover { background-color:  #37373d; }
+.monaco-list.list_id_1:not(.drop-target) .monaco-list-row:hover:not(.selected):not(.focused) { background-color:  #2a2d2e; }
+
+				.monaco-list.list_id_1.drop-target,
+				.monaco-list.list_id_1 .monaco-list-rows.drop-target,
+				.monaco-list.list_id_1 .monaco-list-row.drop-target { background-color: #062f4a !important; color: inherit !important; }
+			
+.monaco-list-type-filter { background-color: #653723 }
+.monaco-list-type-filter { border: 1px solid rgba(0, 0, 0, 0); }
+.monaco-list-type-filter.no-matches { border: 1px solid #be1100; }
+.monaco-list-type-filter { box-shadow: 1px 1px 1px #000000; }</style></div></div><div class="suggest-status-bar" aria-hidden="true" style="display: none; background-color: rgb(37, 37, 38); border-color: rgb(69, 69, 69);"><span></span><span></span></div><div class="details" aria-hidden="true" style="font-size: 14px; font-weight: normal; font-feature-settings: &quot;liga&quot; 0, &quot;calt&quot; 0; display: none; background-color: rgb(37, 37, 38); border-color: rgb(69, 69, 69);"><div class="monaco-scrollable-element " role="presentation" style="position: relative; overflow: hidden;"><div class="body" style="overflow: hidden;"><div class="header"><span class="codicon codicon-close" title="Read less...Ctrl+Space" style="height: 19px; width: 19px;"></span><p class="type" style="font-family: Consolas, &quot;Courier New&quot;, monospace;"></p></div><p class="docs"></p></div><div role="presentation" aria-hidden="true" class="invisible scrollbar horizontal" style="position: absolute;"><div class="slider" style="position: absolute; top: 0px; left: 0px; height: 10px; transform: translate3d(0px, 0px, 0px); contain: strict;"></div></div><div role="presentation" aria-hidden="true" class="invisible scrollbar vertical" style="position: absolute;"><div class="slider" style="position: absolute; top: 0px; left: 0px; width: 10px; transform: translate3d(0px, 0px, 0px); contain: strict;"></div></div><div class="shadow"></div><div class="shadow"></div><div class="shadow top-left-corner"></div></div></div></div><div class="monaco-editor-hover hidden" tabindex="0" widgetid="editor.contrib.modesContentHoverWidget" style="position: absolute; visibility: hidden; max-width: 1134px;"><div class="monaco-scrollable-element " role="presentation" style="position: relative; overflow: hidden;"><div class="monaco-editor-hover-content" style="overflow: hidden; font-size: 14px; line-height: 19px; max-height: 250px; max-width: 500px;"></div><div role="presentation" aria-hidden="true" class="invisible scrollbar horizontal" style="position: absolute;"><div class="slider" style="position: absolute; top: 0px; left: 0px; height: 10px; transform: translate3d(0px, 0px, 0px); contain: strict;"></div></div><div role="presentation" aria-hidden="true" class="invisible scrollbar vertical" style="position: absolute;"><div class="slider" style="position: absolute; top: 0px; left: 0px; width: 10px; transform: translate3d(0px, 0px, 0px); contain: strict;"></div></div><div class="shadow"></div><div class="shadow"></div><div class="shadow top-left-corner"></div></div></div></div><div class="context-view" aria-hidden="true" style="display: none;"></div></div></div>
+            <a href="javascript:void" id="modal-link-make_keeper-input">Run in 61A Code</a>
+            <div class="modal fade" id="modal-make_keeper-input" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content" style="padding-bottom: -5px">
+                    <iframe id="code-iframe-make_keeper-input" width="100%" height="700px" style="border: none; display:block;" src="./Discussion 2 _ CS 61A Summer 2024_files/saved_resource.html"></iframe>
+                    </div>
+                </div>
+            </div>
+            <div class="storable-status"><a href="https://disc.cs61a.org/oauth/login" target="_blank">Log in to save your work!</a></div>
+            <script>
+                $(() => activateEditor('def make_keeper(n):\n    &quot;&quot;&quot;Returns a function that takes one parameter cond and prints\n    out all integers 1..i..n where calling cond(i) returns True.\n\n    &gt;&gt;&gt; def is_even(x): # Even numbers have remainder 0 when divided by 2.\n    ...     return x % 2 == 0\n    &gt;&gt;&gt; make_keeper(5)(is_even)\n    2\n    4\n    &gt;&gt;&gt; make_keeper(5)(lambda x: True)\n    1\n    2\n    3\n    4\n    5\n    &gt;&gt;&gt; make_keeper(5)(lambda x: False)  # Nothing is printed\n    &quot;&quot;&quot;\n    "*** YOUR CODE HERE ***"\n\n', "python", "make_keeper-input"));
+            </script>
+        
+
+<p>No peeking! First try to implement it without the hint.</p>
+
+
+        <button id="toggle-1" class="btn btn-outline btn-lg alwaystoggle toggle" style="display: inline-block;">
+        Hint<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-1">
+To return a function <code>f</code>, include <code>def f(cond):</code> as the first line of the
+implementation and <code>return f</code> as the last. The <code>f</code> function should introduce <code>i
+= 1</code> in order to loop through all integers, calling <code>cond(i)</code> to determine
+whether <code>cond</code> returns true for each integer.
+</div>
+
+<p><strong>Don't run Python to check your work. You can check it just by thinking!</strong> If you get stuck, ask the staff for help.</p>
+
+<p xt-marked="ok">Once your group has converged on a solution, now it's time to practice your ability to describe your own code. A good description is like a good program: concise and accurate. <xt-mark w="nominate" style="color: #ff8861 !important">Nominate</xt-mark> someone to describe how your solution works and have them present to the group for practice.
+<!-- Then, send a message to the <code>discuss&#x2d;queue</code> channel with the @discuss tag, your discussion group number, and the message "Listen up!" and a member of the course staff will join your voice channel to hear your description. If no one comes right away, feel free to work on the next problem until someone from the staff shows up. --></p>
+
+
+<h3 id="q5-digit-finder">Q5: Digit Finder</h3>
+
+
+<p>Implement <code>find_digit</code>, which takes in a positive integer <code>k</code> and returns a
+function that takes in a positive integer <code>x</code> and returns the <code>k</code>th digit from
+the right of <code>x</code>. If <code>x</code> has fewer than <code>k</code> digits, it returns 0.</p>
+
+<p>For example, in the number 4567, 7 is the 1st digit from the right, 6 is the
+2nd digit from the right, and the 5th digit from the right is 0 (since
+there are only 4 digits).</p>
+
+<p><strong>Important:</strong> You may not use strings or indexing for this problem. Try to solve this problem using only one line.</p>
+
+<blockquote><p><strong>Hint</strong>: Lambda expressions.</p>
+
+<p><strong>Hint</strong>: Use floor dividing by a power of 10 gets rid of the rightmost digits.</p></blockquote>
+
+
+            <div class="monaco-storable" id="find_digit-input" style="height:306px;" data-keybinding-context="1" data-mode-id="python"><div class="monaco-editor no-user-select  showUnused vs-dark" data-uri="inmemory://model/2" style="width: 698px; height: 306px;"><div data-mprt="3" class="overflow-guard" style="width: 698px; height: 306px;"><div class="margin" role="presentation" aria-hidden="true" style="position: absolute; transform: translate3d(0px, 0px, 0px); contain: strict; top: 0px; height: 306px; width: 64px;"><div class="glyph-margin" style="left: 0px; width: 0px; height: 306px;"></div><div class="margin-view-zones" role="presentation" aria-hidden="true" style="position: absolute;"></div><div class="margin-view-overlays" role="presentation" aria-hidden="true" style="position: absolute; width: 64px; font-family: Consolas, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; font-feature-settings: &quot;liga&quot; 0, &quot;calt&quot; 0; line-height: 19px; letter-spacing: 0px; height: 306px;"><div style="position:absolute;top:0px;width:100%;height:19px;"><div class="cldr codicon codicon-chevron-down" style="left:38px;width:26px;"></div><div class="line-numbers" style="left:0px;width:38px;">1</div></div><div style="position:absolute;top:19px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">2</div></div><div style="position:absolute;top:38px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">3</div></div><div style="position:absolute;top:57px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">4</div></div><div style="position:absolute;top:76px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">5</div></div><div style="position:absolute;top:95px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">6</div></div><div style="position:absolute;top:114px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">7</div></div><div style="position:absolute;top:133px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">8</div></div><div style="position:absolute;top:152px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">9</div></div><div style="position:absolute;top:171px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">10</div></div><div style="position:absolute;top:190px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">11</div></div><div style="position:absolute;top:209px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">12</div></div><div style="position:absolute;top:228px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">13</div></div><div style="position:absolute;top:247px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">14</div></div><div style="position:absolute;top:266px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">15</div></div><div style="position:absolute;top:285px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">16</div></div></div></div><div class="monaco-scrollable-element editor-scrollable vs-dark" role="presentation" data-mprt="5" style="position: absolute; overflow: hidden; left: 64px; width: 634px; height: 306px;"><div class="lines-content monaco-editor-background" style="position: absolute; overflow: hidden; width: 1e+06px; height: 1e+06px; transform: translate3d(0px, 0px, 0px); contain: strict; top: 0px; left: 0px;"><div class="view-overlays" role="presentation" aria-hidden="true" style="position: absolute; height: 0px; width: 634px;"><div style="position:absolute;top:0px;width:100%;height:19px;"></div><div style="position:absolute;top:19px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:38px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:57px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:76px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:95px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:114px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:133px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:152px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:171px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:190px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:209px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:228px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:247px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:266px;width:100%;height:19px;"></div><div style="position:absolute;top:285px;width:100%;height:19px;"></div></div><div role="presentation" aria-hidden="true" class="view-rulers"></div><div class="view-zones" role="presentation" aria-hidden="true" style="position: absolute;"></div><div class="view-lines" role="presentation" aria-hidden="true" data-mprt="7" style="position: absolute; font-family: Consolas, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; font-feature-settings: &quot;liga&quot; 0, &quot;calt&quot; 0; line-height: 19px; letter-spacing: 0px; width: 634px; height: 306px;"><div style="top:0px;height:19px;" class="view-line"><span><span class="mtk8">def</span><span class="mtk1">&nbsp;find_digit</span><span class="mtk9">(</span><span class="mtk1">k</span><span class="mtk9">):</span></span></div><div style="top:19px;height:19px;" class="view-line"><span><span class="mtk1">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="mtk5">"""Returns&nbsp;a&nbsp;function&nbsp;that&nbsp;returns&nbsp;the&nbsp;kth&nbsp;digit&nbsp;o</span><span class="mtk5">f&nbsp;x.</span></span></div><div style="top:38px;height:19px;" class="view-line"><span><span>&nbsp;</span></span></div><div style="top:57px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;find_digit(2)(3456)</span></span></div><div style="top:76px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;5</span></span></div><div style="top:95px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;find_digit(2)(5678)</span></span></div><div style="top:114px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;7</span></span></div><div style="top:133px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;find_digit(1)(10)</span></span></div><div style="top:152px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;0</span></span></div><div style="top:171px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;find_digit(4)(789)</span></span></div><div style="top:190px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;0</span></span></div><div style="top:209px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;"""</span></span></div><div style="top:228px;height:19px;" class="view-line"><span><span class="mtk1">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="mtk8">assert</span><span class="mtk1">&nbsp;k&nbsp;&gt;&nbsp;</span><span class="mtk6">0</span></span></div><div style="top:247px;height:19px;" class="view-line"><span><span class="mtk1">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="mtk5">"***&nbsp;YOUR&nbsp;CODE&nbsp;HERE&nbsp;***"</span></span></div><div style="top:266px;height:19px;" class="view-line"><span><span>&nbsp;</span></span></div><div style="top:285px;height:19px;" class="view-line"><span><span>&nbsp;</span></span></div></div><div data-mprt="1" class="contentWidgets" style="position: absolute; top: 0px;"></div><div role="presentation" aria-hidden="true" class="cursors-layer cursor-line-style cursor-solid"><div class="cursor " style="height: 19px; top: 0px; left: 0px; font-family: Consolas, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; font-feature-settings: &quot;liga&quot; 0, &quot;calt&quot; 0; line-height: 19px; letter-spacing: 0px; display: block; visibility: hidden; width: 1.92308px;"></div></div></div><div role="presentation" aria-hidden="true" class="invisible scrollbar horizontal" style="position: absolute; width: 620px; height: 10px; left: 0px; bottom: 0px;"><div class="slider" style="position: absolute; top: 0px; left: 0px; height: 10px; transform: translate3d(0px, 0px, 0px); contain: strict; width: 620px;"></div></div><canvas class="decorationsOverviewRuler" aria-hidden="true" width="36" height="795" style="position: absolute; transform: translate3d(0px, 0px, 0px); contain: strict; top: 0px; right: 0px; width: 14px; height: 306px;"></canvas><div role="presentation" aria-hidden="true" class="invisible scrollbar vertical" style="position: absolute; width: 14px; height: 306px; right: 0px; top: 0px;"><div class="slider" style="position: absolute; top: 0px; left: 0px; width: 14px; transform: translate3d(0px, 0px, 0px); contain: strict; height: 306px;"></div></div></div><div role="presentation" aria-hidden="true" style="width: 698px;"></div><textarea data-mprt="6" class="inputarea" wrap="off" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" aria-label="Editor content;Press Alt+F1 for Accessibility Options." role="textbox" aria-multiline="true" aria-haspopup="false" aria-autocomplete="both" style="font-family: Consolas, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; font-feature-settings: &quot;liga&quot; 0, &quot;calt&quot; 0; line-height: 19px; letter-spacing: 0px; top: 0px; left: 64px; width: 1px; height: 1px;"></textarea><div style="position: absolute; top: 0px; left: 0px; width: 0px; height: 0px;"></div><div data-mprt="4" class="overlayWidgets" style="width: 698px;"><div class="accessibilityHelpWidget" role="dialog" aria-hidden="true" widgetid="editor.contrib.accessibilityHelpWidget" style="display: none; position: absolute;"><div role="document"></div></div><div class="monaco-editor-hover hidden" aria-hidden="true" role="presentation" widgetid="editor.contrib.modesGlyphHoverWidget" style="position: absolute;"></div></div><div data-mprt="8" class="minimap slider-mouseover" role="presentation" aria-hidden="true" style="position: absolute; left: 0px; width: 0px; height: 306px;"><div class="minimap-shadow-hidden" style="height: 306px;"></div><canvas width="0" height="795" style="position: absolute; left: 0px; width: 0px; height: 305.769px;"></canvas><canvas class="minimap-decorations-layer" width="0" height="795" style="position: absolute; left: 0px; width: 0px; height: 305.769px;"></canvas><div class="minimap-slider" style="position: absolute; transform: translate3d(0px, 0px, 0px); contain: strict; width: 0px;"><div class="minimap-slider-horizontal" style="position: absolute; width: 0px; height: 0px;"></div></div></div></div><div data-mprt="2" class="overflowingContentWidgets"><div class="monaco-editor rename-box" widgetid="__renameInputWidget" style="background-color: rgb(37, 37, 38); box-shadow: rgb(0, 0, 0) 0px 2px 8px; color: rgb(204, 204, 204); position: absolute; visibility: hidden; max-width: 1134px;"><input class="rename-input" type="text" aria-label="Rename input. Type new name and press Enter to commit." style="font-family: Consolas, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; background-color: rgb(60, 60, 60); border-width: 0px; border-style: none;"><div class="rename-label" style="font-size: 11.2px;">Enter to Rename, Shift+Enter to Preview</div></div><div class="editor-widget suggest-widget" widgetid="editor.widget.suggestWidget" style="position: absolute; visibility: inherit; max-width: 1134px; top: 22px; left: 64px;" monaco-visible-content-widget="true"><div class="message" aria-hidden="true" style="display: none; background-color: rgb(37, 37, 38); border-color: rgb(69, 69, 69);"></div><div class="tree" aria-hidden="true" style="display: none; background-color: rgb(37, 37, 38); border-color: rgb(69, 69, 69);"><div class="monaco-list list_id_2" tabindex="0" role="tree"><div class="monaco-scrollable-element " role="presentation" style="position: relative; overflow: hidden;"><div class="monaco-list-rows" style="transform: translate3d(0px, 0px, 0px); overflow: hidden;"></div><div role="presentation" aria-hidden="true" class="invisible scrollbar horizontal" style="position: absolute;"><div class="slider" style="position: absolute; top: 0px; left: 0px; height: 10px; transform: translate3d(0px, 0px, 0px); contain: strict;"></div></div><div role="presentation" aria-hidden="true" class="invisible scrollbar vertical" style="position: absolute;"><div class="slider" style="position: absolute; top: 0px; left: 0px; width: 10px; transform: translate3d(0px, 0px, 0px); contain: strict;"></div></div></div><style type="text/css" media="screen">.monaco-list.list_id_2:focus .monaco-list-row.focused { background-color: #062f4a; }
+.monaco-list.list_id_2:focus .monaco-list-row.focused:hover { background-color: #062f4a; }
+.monaco-list.list_id_2:focus .monaco-list-row.selected { background-color: #084066; }
+.monaco-list.list_id_2:focus .monaco-list-row.selected:hover { background-color: #084066; }
+.monaco-list.list_id_2:focus .monaco-list-row.selected { color: #ffffff; }
+
+				.monaco-drag-image,
+				.monaco-list.list_id_2:focus .monaco-list-row.selected.focused { background-color: #094771; }
+			
+
+				.monaco-drag-image,
+				.monaco-list.list_id_2:focus .monaco-list-row.selected.focused { color: #ffffff; }
+			
+.monaco-list.list_id_2 .monaco-list-row.focused { background-color:  #062f4a; }
+.monaco-list.list_id_2 .monaco-list-row.focused:hover { background-color:  #062f4a; }
+.monaco-list.list_id_2 .monaco-list-row.selected { background-color:  #37373d; }
+.monaco-list.list_id_2 .monaco-list-row.selected:hover { background-color:  #37373d; }
+.monaco-list.list_id_2:not(.drop-target) .monaco-list-row:hover:not(.selected):not(.focused) { background-color:  #2a2d2e; }
+
+				.monaco-list.list_id_2.drop-target,
+				.monaco-list.list_id_2 .monaco-list-rows.drop-target,
+				.monaco-list.list_id_2 .monaco-list-row.drop-target { background-color: #062f4a !important; color: inherit !important; }
+			
+.monaco-list-type-filter { background-color: #653723 }
+.monaco-list-type-filter { border: 1px solid rgba(0, 0, 0, 0); }
+.monaco-list-type-filter.no-matches { border: 1px solid #be1100; }
+.monaco-list-type-filter { box-shadow: 1px 1px 1px #000000; }</style></div></div><div class="suggest-status-bar" aria-hidden="true" style="display: none; background-color: rgb(37, 37, 38); border-color: rgb(69, 69, 69);"><span></span><span></span></div><div class="details" aria-hidden="true" style="font-size: 14px; font-weight: normal; font-feature-settings: &quot;liga&quot; 0, &quot;calt&quot; 0; display: none; background-color: rgb(37, 37, 38); border-color: rgb(69, 69, 69);"><div class="monaco-scrollable-element " role="presentation" style="position: relative; overflow: hidden;"><div class="body" style="overflow: hidden;"><div class="header"><span class="codicon codicon-close" title="Read less...Ctrl+Space" style="height: 19px; width: 19px;"></span><p class="type" style="font-family: Consolas, &quot;Courier New&quot;, monospace;"></p></div><p class="docs"></p></div><div role="presentation" aria-hidden="true" class="invisible scrollbar horizontal" style="position: absolute;"><div class="slider" style="position: absolute; top: 0px; left: 0px; height: 10px; transform: translate3d(0px, 0px, 0px); contain: strict;"></div></div><div role="presentation" aria-hidden="true" class="invisible scrollbar vertical" style="position: absolute;"><div class="slider" style="position: absolute; top: 0px; left: 0px; width: 10px; transform: translate3d(0px, 0px, 0px); contain: strict;"></div></div><div class="shadow"></div><div class="shadow"></div><div class="shadow top-left-corner"></div></div></div></div><div class="monaco-editor-hover hidden" tabindex="0" widgetid="editor.contrib.modesContentHoverWidget" style="position: absolute; visibility: hidden; max-width: 1134px;"><div class="monaco-scrollable-element " role="presentation" style="position: relative; overflow: hidden;"><div class="monaco-editor-hover-content" style="overflow: hidden; font-size: 14px; line-height: 19px; max-height: 250px; max-width: 500px;"></div><div role="presentation" aria-hidden="true" class="invisible scrollbar horizontal" style="position: absolute;"><div class="slider" style="position: absolute; top: 0px; left: 0px; height: 10px; transform: translate3d(0px, 0px, 0px); contain: strict;"></div></div><div role="presentation" aria-hidden="true" class="invisible scrollbar vertical" style="position: absolute;"><div class="slider" style="position: absolute; top: 0px; left: 0px; width: 10px; transform: translate3d(0px, 0px, 0px); contain: strict;"></div></div><div class="shadow"></div><div class="shadow"></div><div class="shadow top-left-corner"></div></div></div></div><div class="context-view" aria-hidden="true" style="display: none;"></div></div></div>
+            <a href="javascript:void" id="modal-link-find_digit-input">Run in 61A Code</a>
+            <div class="modal fade" id="modal-find_digit-input" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content" style="padding-bottom: -5px">
+                    <iframe id="code-iframe-find_digit-input" width="100%" height="700px" style="border: none; display:block;" src="./Discussion 2 _ CS 61A Summer 2024_files/saved_resource(1).html"></iframe>
+                    </div>
+                </div>
+            </div>
+            <div class="storable-status"><a href="https://disc.cs61a.org/oauth/login" target="_blank">Log in to save your work!</a></div>
+            <script>
+                $(() => activateEditor('def find_digit(k):\n    &quot;&quot;&quot;Returns a function that returns the kth digit of x.\n\n    &gt;&gt;&gt; find_digit(2)(3456)\n    5\n    &gt;&gt;&gt; find_digit(2)(5678)\n    7\n    &gt;&gt;&gt; find_digit(1)(10)\n    0\n    &gt;&gt;&gt; find_digit(4)(789)\n    0\n    &quot;&quot;&quot;\n    assert k &gt; 0\n    "*** YOUR CODE HERE ***"\n\n', "python", "find_digit-input"));
+            </script>
+        
+
+
+        <button id="toggle-2" class="btn btn-outline btn-lg alwaystoggle toggle" style="display: inline-block;">
+        Hint<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-2">
+First remove all of the digits after digit <code>k</code>, at which point digit <code>k</code> will be the last digit.
+</div>
+
+
+<h3 id="q6-match-maker">Q6: Match Maker</h3>
+
+
+<p>Implement <code>match_k</code>, which takes in an integer <code>k</code> and returns a function
+that takes in a variable <code>x</code> and returns <code>True</code> if all the digits in <code>x</code> that
+are <code>k</code> apart are the same.</p>
+
+<p>For example, <code>match_k(2)</code> returns a one argument function that takes in <code>x</code>
+and checks if digits that are 2 away in <code>x</code> are the same.</p>
+
+<p><code>match_k(2)(1010)</code> has the value of <code>x = 1010</code> and digits 1, 0, 1, 0 going
+from left to right. <code>1 == 1</code> and <code>0 == 0</code>, so the <code>match_k(2)(1010)</code> results
+in <code>True</code>.</p>
+
+<p><code>match_k(2)(2010)</code> has the value of <code>x = 2010</code> and digits 2, 0, 1, 0 going
+from left to right. <code>2 != 1</code> and <code>0 == 0</code>, so the <code>match_k(2)(2010)</code> results
+in <code>False</code>.</p>
+
+<p><strong>Important:</strong> You may not use strings or indexing for this problem.</p>
+
+<blockquote><p><strong>Hint</strong>: Floor dividing by powers of 10 gets rid of the rightmost digits.</p></blockquote>
+
+
+            <div class="monaco-storable" id="match_k-input" style="height:504px;" data-keybinding-context="1" data-mode-id="python"><div class="monaco-editor no-user-select  showUnused vs-dark" data-uri="inmemory://model/3" style="width: 698px; height: 504px;"><div data-mprt="3" class="overflow-guard" style="width: 698px; height: 504px;"><div class="margin" role="presentation" aria-hidden="true" style="position: absolute; transform: translate3d(0px, 0px, 0px); contain: strict; top: 0px; height: 513px; width: 64px;"><div class="glyph-margin" style="left: 0px; width: 0px; height: 513px;"></div><div class="margin-view-zones" role="presentation" aria-hidden="true" style="position: absolute;"></div><div class="margin-view-overlays" role="presentation" aria-hidden="true" style="position: absolute; width: 64px; font-family: Consolas, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; font-feature-settings: &quot;liga&quot; 0, &quot;calt&quot; 0; line-height: 19px; letter-spacing: 0px; height: 513px;"><div style="position:absolute;top:0px;width:100%;height:19px;"><div class="cldr codicon codicon-chevron-down" style="left:38px;width:26px;"></div><div class="line-numbers" style="left:0px;width:38px;">1</div></div><div style="position:absolute;top:19px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">2</div></div><div style="position:absolute;top:38px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">3</div></div><div style="position:absolute;top:57px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">4</div></div><div style="position:absolute;top:76px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">5</div></div><div style="position:absolute;top:95px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">6</div></div><div style="position:absolute;top:114px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">7</div></div><div style="position:absolute;top:133px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">8</div></div><div style="position:absolute;top:152px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">9</div></div><div style="position:absolute;top:171px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">10</div></div><div style="position:absolute;top:190px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">11</div></div><div style="position:absolute;top:209px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">12</div></div><div style="position:absolute;top:228px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">13</div></div><div style="position:absolute;top:247px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">14</div></div><div style="position:absolute;top:266px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">15</div></div><div style="position:absolute;top:285px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">16</div></div><div style="position:absolute;top:304px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">17</div></div><div style="position:absolute;top:323px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">18</div></div><div style="position:absolute;top:342px;width:100%;height:19px;"><div class="cldr codicon codicon-chevron-down" style="left:38px;width:26px;"></div><div class="line-numbers" style="left:0px;width:38px;">19</div></div><div style="position:absolute;top:361px;width:100%;height:19px;"><div class="cldr codicon codicon-chevron-down" style="left:38px;width:26px;"></div><div class="line-numbers" style="left:0px;width:38px;">20</div></div><div style="position:absolute;top:380px;width:100%;height:19px;"><div class="cldr codicon codicon-chevron-down" style="left:38px;width:26px;"></div><div class="line-numbers" style="left:0px;width:38px;">21</div></div><div style="position:absolute;top:399px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">22</div></div><div style="position:absolute;top:418px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">23</div></div><div style="position:absolute;top:437px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">24</div></div><div style="position:absolute;top:456px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">25</div></div><div style="position:absolute;top:475px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">26</div></div><div style="position:absolute;top:494px;width:100%;height:19px;"><div class="line-numbers" style="left:0px;width:38px;">27</div></div></div></div><div class="monaco-scrollable-element editor-scrollable vs-dark" role="presentation" data-mprt="5" style="position: absolute; overflow: hidden; left: 64px; width: 634px; height: 504px;"><div class="lines-content monaco-editor-background" style="position: absolute; overflow: hidden; width: 1e+06px; height: 1e+06px; transform: translate3d(0px, 0px, 0px); contain: strict; top: 0px; left: 0px;"><div class="view-overlays" role="presentation" aria-hidden="true" style="position: absolute; height: 0px; width: 634px;"><div style="position:absolute;top:0px;width:100%;height:19px;"></div><div style="position:absolute;top:19px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:38px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:57px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:76px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:95px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:114px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:133px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:152px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:171px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:190px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:209px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:228px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:247px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:266px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:285px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:304px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:323px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:342px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:361px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div><div class="cigr" style="left:30.78125px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:380px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div><div class="cigr" style="left:30.78125px;height:19px;width:30.78125px"></div><div class="cigr" style="left:61.5625px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:399px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div><div class="cigr" style="left:30.78125px;height:19px;width:30.78125px"></div><div class="cigr" style="left:61.5625px;height:19px;width:30.78125px"></div><div class="cigr" style="left:92.34375px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:418px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div><div class="cigr" style="left:30.78125px;height:19px;width:30.78125px"></div><div class="cigr" style="left:61.5625px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:437px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div><div class="cigr" style="left:30.78125px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:456px;width:100%;height:19px;"><div class="cigr" style="left:0px;height:19px;width:30.78125px"></div></div><div style="position:absolute;top:475px;width:100%;height:19px;"></div><div style="position:absolute;top:494px;width:100%;height:19px;"></div></div><div role="presentation" aria-hidden="true" class="view-rulers"></div><div class="view-zones" role="presentation" aria-hidden="true" style="position: absolute;"></div><div class="view-lines" role="presentation" aria-hidden="true" data-mprt="7" style="position: absolute; font-family: Consolas, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; font-feature-settings: &quot;liga&quot; 0, &quot;calt&quot; 0; line-height: 19px; letter-spacing: 0px; width: 634px; height: 513px;"><div style="top:0px;height:19px;" class="view-line"><span><span class="mtk8">def</span><span class="mtk1">&nbsp;match_k</span><span class="mtk9">(</span><span class="mtk1">k</span><span class="mtk9">):</span></span></div><div style="top:19px;height:19px;" class="view-line"><span><span class="mtk1">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="mtk5">"""Returns&nbsp;a&nbsp;function&nbsp;that&nbsp;checks&nbsp;if&nbsp;digits&nbsp;k&nbsp;apar</span><span class="mtk5">t&nbsp;match.</span></span></div><div style="top:38px;height:19px;" class="view-line"><span><span>&nbsp;</span></span></div><div style="top:57px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;match_k(2)(1010)</span></span></div><div style="top:76px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;True</span></span></div><div style="top:95px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;match_k(2)(2010)</span></span></div><div style="top:114px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;False</span></span></div><div style="top:133px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;match_k(1)(1010)</span></span></div><div style="top:152px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;False</span></span></div><div style="top:171px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;match_k(1)(1)</span></span></div><div style="top:190px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;True</span></span></div><div style="top:209px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;match_k(1)(2111111111111111)</span></span></div><div style="top:228px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;False</span></span></div><div style="top:247px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;match_k(3)(123123)</span></span></div><div style="top:266px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;True</span></span></div><div style="top:285px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;match_k(2)(123123)</span></span></div><div style="top:304px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;False</span></span></div><div style="top:323px;height:19px;" class="view-line"><span><span class="mtk5">&nbsp;&nbsp;&nbsp;&nbsp;"""</span></span></div><div style="top:342px;height:19px;" class="view-line"><span><span class="mtk1">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="mtk8">def</span><span class="mtk1">&nbsp;check</span><span class="mtk9">(</span><span class="mtk1">x</span><span class="mtk9">):</span></span></div><div style="top:361px;height:19px;" class="view-line"><span><span class="mtk1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="mtk8">while</span><span class="mtk1">&nbsp;x&nbsp;//&nbsp;</span><span class="mtk9">(</span><span class="mtk6">10</span><span class="mtk1">&nbsp;**&nbsp;k</span><span class="mtk9">)</span><span class="mtk1">&nbsp;&gt;&nbsp;</span><span class="mtk6">0</span><span class="mtk9">:</span></span></div><div style="top:380px;height:19px;" class="view-line"><span><span class="mtk1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="mtk8">if</span><span class="mtk1">&nbsp;____________________________</span><span class="mtk9">:</span></span></div><div style="top:399px;height:19px;" class="view-line"><span><span class="mtk1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="mtk8">return</span><span class="mtk1">&nbsp;____________________________</span></span></div><div style="top:418px;height:19px;" class="view-line"><span><span class="mtk1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x&nbsp;//=&nbsp;</span><span class="mtk6">10</span></span></div><div style="top:437px;height:19px;" class="view-line"><span><span class="mtk1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;____________________________</span></span></div><div style="top:456px;height:19px;" class="view-line"><span><span class="mtk1">&nbsp;&nbsp;&nbsp;&nbsp;____________________________</span></span></div><div style="top:475px;height:19px;" class="view-line"><span><span>&nbsp;</span></span></div><div style="top:494px;height:19px;" class="view-line"><span><span>&nbsp;</span></span></div></div><div data-mprt="1" class="contentWidgets" style="position: absolute; top: 0px;"></div><div role="presentation" aria-hidden="true" class="cursors-layer cursor-line-style cursor-solid"><div class="cursor " style="height: 19px; top: 0px; left: 0px; font-family: Consolas, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; font-feature-settings: &quot;liga&quot; 0, &quot;calt&quot; 0; line-height: 19px; letter-spacing: 0px; display: block; visibility: hidden; width: 1.92308px;"></div></div></div><div role="presentation" aria-hidden="true" class="invisible scrollbar horizontal" style="position: absolute; width: 620px; height: 10px; left: 0px; bottom: 0px;"><div class="slider" style="position: absolute; top: 0px; left: 0px; height: 10px; transform: translate3d(0px, 0px, 0px); contain: strict; width: 620px;"></div></div><canvas class="decorationsOverviewRuler" aria-hidden="true" width="36" height="1310" style="position: absolute; transform: translate3d(0px, 0px, 0px); contain: strict; top: 0px; right: 0px; width: 14px; height: 504px;"></canvas><div role="presentation" aria-hidden="true" class="invisible scrollbar vertical" style="position: absolute; width: 14px; height: 504px; right: 0px; top: 0px;"><div class="slider" style="position: absolute; top: 0px; left: 0px; width: 14px; transform: translate3d(0px, 0px, 0px); contain: strict; height: 495px;"></div></div></div><div role="presentation" aria-hidden="true" style="width: 698px;"></div><textarea data-mprt="6" class="inputarea" wrap="off" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" aria-label="Editor content;Press Alt+F1 for Accessibility Options." role="textbox" aria-multiline="true" aria-haspopup="false" aria-autocomplete="both" style="font-family: Consolas, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; font-feature-settings: &quot;liga&quot; 0, &quot;calt&quot; 0; line-height: 19px; letter-spacing: 0px; top: 0px; left: 64px; width: 1px; height: 1px;"></textarea><div style="position: absolute; top: 0px; left: 0px; width: 0px; height: 0px;"></div><div data-mprt="4" class="overlayWidgets" style="width: 698px;"><div class="accessibilityHelpWidget" role="dialog" aria-hidden="true" widgetid="editor.contrib.accessibilityHelpWidget" style="display: none; position: absolute;"><div role="document"></div></div><div class="monaco-editor-hover hidden" aria-hidden="true" role="presentation" widgetid="editor.contrib.modesGlyphHoverWidget" style="position: absolute;"></div></div><div data-mprt="8" class="minimap slider-mouseover" role="presentation" aria-hidden="true" style="position: absolute; left: 0px; width: 0px; height: 504px;"><div class="minimap-shadow-hidden" style="height: 504px;"></div><canvas width="0" height="1310" style="position: absolute; left: 0px; width: 0px; height: 503.846px;"></canvas><canvas class="minimap-decorations-layer" width="0" height="1310" style="position: absolute; left: 0px; width: 0px; height: 503.846px;"></canvas><div class="minimap-slider" style="position: absolute; transform: translate3d(0px, 0px, 0px); contain: strict; width: 0px;"><div class="minimap-slider-horizontal" style="position: absolute; width: 0px; height: 0px;"></div></div></div></div><div data-mprt="2" class="overflowingContentWidgets"><div class="monaco-editor rename-box" widgetid="__renameInputWidget" style="background-color: rgb(37, 37, 38); box-shadow: rgb(0, 0, 0) 0px 2px 8px; color: rgb(204, 204, 204); position: absolute; visibility: hidden; max-width: 1134px;"><input class="rename-input" type="text" aria-label="Rename input. Type new name and press Enter to commit." style="font-family: Consolas, &quot;Courier New&quot;, monospace; font-weight: normal; font-size: 14px; background-color: rgb(60, 60, 60); border-width: 0px; border-style: none;"><div class="rename-label" style="font-size: 11.2px;">Enter to Rename, Shift+Enter to Preview</div></div><div class="editor-widget suggest-widget" widgetid="editor.widget.suggestWidget" style="position: absolute; visibility: inherit; max-width: 1134px; top: 22px; left: 64px;" monaco-visible-content-widget="true"><div class="message" aria-hidden="true" style="display: none; background-color: rgb(37, 37, 38); border-color: rgb(69, 69, 69);"></div><div class="tree" aria-hidden="true" style="display: none; background-color: rgb(37, 37, 38); border-color: rgb(69, 69, 69);"><div class="monaco-list list_id_3" tabindex="0" role="tree"><div class="monaco-scrollable-element " role="presentation" style="position: relative; overflow: hidden;"><div class="monaco-list-rows" style="transform: translate3d(0px, 0px, 0px); overflow: hidden;"></div><div role="presentation" aria-hidden="true" class="invisible scrollbar horizontal" style="position: absolute;"><div class="slider" style="position: absolute; top: 0px; left: 0px; height: 10px; transform: translate3d(0px, 0px, 0px); contain: strict;"></div></div><div role="presentation" aria-hidden="true" class="invisible scrollbar vertical" style="position: absolute;"><div class="slider" style="position: absolute; top: 0px; left: 0px; width: 10px; transform: translate3d(0px, 0px, 0px); contain: strict;"></div></div></div><style type="text/css" media="screen">.monaco-list.list_id_3:focus .monaco-list-row.focused { background-color: #062f4a; }
+.monaco-list.list_id_3:focus .monaco-list-row.focused:hover { background-color: #062f4a; }
+.monaco-list.list_id_3:focus .monaco-list-row.selected { background-color: #084066; }
+.monaco-list.list_id_3:focus .monaco-list-row.selected:hover { background-color: #084066; }
+.monaco-list.list_id_3:focus .monaco-list-row.selected { color: #ffffff; }
+
+				.monaco-drag-image,
+				.monaco-list.list_id_3:focus .monaco-list-row.selected.focused { background-color: #094771; }
+			
+
+				.monaco-drag-image,
+				.monaco-list.list_id_3:focus .monaco-list-row.selected.focused { color: #ffffff; }
+			
+.monaco-list.list_id_3 .monaco-list-row.focused { background-color:  #062f4a; }
+.monaco-list.list_id_3 .monaco-list-row.focused:hover { background-color:  #062f4a; }
+.monaco-list.list_id_3 .monaco-list-row.selected { background-color:  #37373d; }
+.monaco-list.list_id_3 .monaco-list-row.selected:hover { background-color:  #37373d; }
+.monaco-list.list_id_3:not(.drop-target) .monaco-list-row:hover:not(.selected):not(.focused) { background-color:  #2a2d2e; }
+
+				.monaco-list.list_id_3.drop-target,
+				.monaco-list.list_id_3 .monaco-list-rows.drop-target,
+				.monaco-list.list_id_3 .monaco-list-row.drop-target { background-color: #062f4a !important; color: inherit !important; }
+			
+.monaco-list-type-filter { background-color: #653723 }
+.monaco-list-type-filter { border: 1px solid rgba(0, 0, 0, 0); }
+.monaco-list-type-filter.no-matches { border: 1px solid #be1100; }
+.monaco-list-type-filter { box-shadow: 1px 1px 1px #000000; }</style></div></div><div class="suggest-status-bar" aria-hidden="true" style="display: none; background-color: rgb(37, 37, 38); border-color: rgb(69, 69, 69);"><span></span><span></span></div><div class="details" aria-hidden="true" style="font-size: 14px; font-weight: normal; font-feature-settings: &quot;liga&quot; 0, &quot;calt&quot; 0; display: none; background-color: rgb(37, 37, 38); border-color: rgb(69, 69, 69);"><div class="monaco-scrollable-element " role="presentation" style="position: relative; overflow: hidden;"><div class="body" style="overflow: hidden;"><div class="header"><span class="codicon codicon-close" title="Read less...Ctrl+Space" style="height: 19px; width: 19px;"></span><p class="type" style="font-family: Consolas, &quot;Courier New&quot;, monospace;"></p></div><p class="docs"></p></div><div role="presentation" aria-hidden="true" class="invisible scrollbar horizontal" style="position: absolute;"><div class="slider" style="position: absolute; top: 0px; left: 0px; height: 10px; transform: translate3d(0px, 0px, 0px); contain: strict;"></div></div><div role="presentation" aria-hidden="true" class="invisible scrollbar vertical" style="position: absolute;"><div class="slider" style="position: absolute; top: 0px; left: 0px; width: 10px; transform: translate3d(0px, 0px, 0px); contain: strict;"></div></div><div class="shadow"></div><div class="shadow"></div><div class="shadow top-left-corner"></div></div></div></div><div class="monaco-editor-hover hidden" tabindex="0" widgetid="editor.contrib.modesContentHoverWidget" style="position: absolute; visibility: hidden; max-width: 1134px;"><div class="monaco-scrollable-element " role="presentation" style="position: relative; overflow: hidden;"><div class="monaco-editor-hover-content" style="overflow: hidden; font-size: 14px; line-height: 19px; max-height: 250px; max-width: 500px;"></div><div role="presentation" aria-hidden="true" class="invisible scrollbar horizontal" style="position: absolute;"><div class="slider" style="position: absolute; top: 0px; left: 0px; height: 10px; transform: translate3d(0px, 0px, 0px); contain: strict;"></div></div><div role="presentation" aria-hidden="true" class="invisible scrollbar vertical" style="position: absolute;"><div class="slider" style="position: absolute; top: 0px; left: 0px; width: 10px; transform: translate3d(0px, 0px, 0px); contain: strict;"></div></div><div class="shadow"></div><div class="shadow"></div><div class="shadow top-left-corner"></div></div></div></div><div class="context-view" aria-hidden="true" style="display: none;"></div></div></div>
+            <a href="javascript:void" id="modal-link-match_k-input">Run in 61A Code</a>
+            <div class="modal fade" id="modal-match_k-input" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content" style="padding-bottom: -5px">
+                    <iframe id="code-iframe-match_k-input" width="100%" height="700px" style="border: none; display:block;" src="./Discussion 2 _ CS 61A Summer 2024_files/saved_resource(2).html"></iframe>
+                    </div>
+                </div>
+            </div>
+            <div class="storable-status"><a href="https://disc.cs61a.org/oauth/login" target="_blank">Log in to save your work!</a></div>
+            <script>
+                $(() => activateEditor('def match_k(k):\n    &quot;&quot;&quot;Returns a function that checks if digits k apart match.\n\n    &gt;&gt;&gt; match_k(2)(1010)\n    True\n    &gt;&gt;&gt; match_k(2)(2010)\n    False\n    &gt;&gt;&gt; match_k(1)(1010)\n    False\n    &gt;&gt;&gt; match_k(1)(1)\n    True\n    &gt;&gt;&gt; match_k(1)(2111111111111111)\n    False\n    &gt;&gt;&gt; match_k(3)(123123)\n    True\n    &gt;&gt;&gt; match_k(2)(123123)\n    False\n    &quot;&quot;&quot;\n    def check(x):\n        while x // (10 ** k) &gt; 0:\n            if ____________________________:\n                return ____________________________\n            x //= 10\n        ____________________________\n    ____________________________\n\n', "python", "match_k-input"));
+            </script>
+        
+
+
+        <button id="toggle-3" class="btn btn-outline btn-lg alwaystoggle toggle" style="display: inline-block;">
+        Hint<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-3">
+In each iteration, compare the last digit with the one that is <code>k</code> positions before it.
+</div>
+
+
+<h1 id="submit-attendance">Submit Attendance</h1>
+
+
+<p>You're done! Excellent work this week. Please be sure to ask your section TA for the attendance form link and fill it out for credit. (one submission per person per section).</p>
+<script>
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+</script>
+
+  </div>
+
+  <div class="col-md-3 sticky">
+    <nav class="hidden-print hidden-sm hidden-xs sidebar">
+      <ul class="nav nav-stacked noselect">
+  <li class=""><a href="https://cs61a.org/disc/disc02/#getting-started">Getting Started</a></li>
+  <ul class="nav nav-stacked noselect">
+    <li class=""><a href="https://cs61a.org/disc/disc02/#q1-warm-up">Q1: Warm Up</a></li>
+  </ul>
+  <li><a href="https://cs61a.org/disc/disc02/#environment-diagrams">Environment Diagrams</a></li>
+  <ul class="nav nav-stacked noselect">
+    <li><a href="https://cs61a.org/disc/disc02/#q2-bottles">Q2: Bottles</a></li>
+    <li><a href="https://cs61a.org/disc/disc02/#q3-double-trouble">Q3: Double Trouble</a></li>
+  </ul>
+  <li><a href="https://cs61a.org/disc/disc02/#call-expressions">Call Expressions</a></li>
+  <li><a href="https://cs61a.org/disc/disc02/#higher-order-functions">Higher-Order Functions</a></li>
+  <ul class="nav nav-stacked noselect">
+    <li><a href="https://cs61a.org/disc/disc02/#q4-make-keeper">Q4: Make Keeper</a></li>
+    <li><a href="https://cs61a.org/disc/disc02/#q5-digit-finder">Q5: Digit Finder</a></li>
+    <li><a href="https://cs61a.org/disc/disc02/#q6-match-maker">Q6: Match Maker</a></li>
+  </ul>
+  <li><a href="https://cs61a.org/disc/disc02/#submit-attendance">Submit Attendance</a></li>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <!-- <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/weekly">Weekly Schedule</a></li>
+            <li><a href="/office-hours">Office Hours</a></li>
+            <li><a href="/staff">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/resources">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/articles/studying">Studying Guide</a></li>
+            <li><a href="/articles/debugging">Debugging Guide</a></li>
+            <li><a href="/articles/composition">Composition Guide</a></li>
+            <li><a href="/articles/pair-programming">Pair Programming</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/articles/about">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/articles/about#assignments">Assignments</a></li>
+            <li><a href="/articles/about#exams">Exams</a></li>
+            <li><a href="/articles/about#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer> -->
+
+    
+
+    <script src="./Discussion 2 _ CS 61A Summer 2024_files/loader.min.js.下载"></script>
+  <link rel="stylesheet" data-name="vs/editor/editor.main" href="./Discussion 2 _ CS 61A Summer 2024_files/editor.main.min.css">
+  <script>
+      require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs' }});
+      window.MonacoEnvironment = { getWorkerUrl: () => URL.createObjectURL(new Blob([`
+      self.MonacoEnvironment = {
+          baseUrl: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min'
+      };
+      importScripts('https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/base/worker/workerMain.min.js');
+  `], { type: 'text/javascript' }))
+  };
+  </script>
+    <script src="./Discussion 2 _ CS 61A Summer 2024_files/jsplumb.min.js.下载"></script>
+    <script src="./Discussion 2 _ CS 61A Summer 2024_files/network_storage.js.下载"></script>
+    <script src="./Discussion 2 _ CS 61A Summer 2024_files/storable.js.下载"></script>
+    <script src="./Discussion 2 _ CS 61A Summer 2024_files/editor.js.下载"></script>
+    <script src="./Discussion 2 _ CS 61A Summer 2024_files/copy-button.js.下载"></script>
+    <script src="./Discussion 2 _ CS 61A Summer 2024_files/env-diagram.js.下载"></script>
+    
+<!-- <script src="/assets/js/sketchy.js"></script> -->
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  
+<div class="monaco-aria-container"><div class="monaco-alert" role="alert" aria-atomic="true"></div><div class="monaco-status" role="status" aria-atomic="true"></div></div><deepl-input-controller><template shadowrootmode="open"><link rel="stylesheet" href="chrome-extension://fancfknaplihpclbhbpclnmmjcjanbaf/build/content.css"><div dir="ltr" style="visibility: initial !important;"><div class="dl-input-translation-container svelte-95aucy"><div></div></div></div></template></deepl-input-controller></body><link rel="stylesheet" asset="eduser.css" href="chrome-extension://mjdbhokoopacimoekfgkcoogikbfgngb/assets/eduser.css"></html>
