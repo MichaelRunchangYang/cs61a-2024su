@@ -67,9 +67,20 @@ class Player:
 
     def debate(self, other):
         "*** YOUR CODE HERE ***"
+        random_num = self.random_func()
+        win_probability = max(0.1, self.popularity / (self.popularity + other.popularity))
+        if random_num < win_probability:
+            self.popularity += 50
+        else:
+            self.popularity -= 50
+            if self.popularity <= 0:
+                self.popularity = 0
 
     def speech(self, other):
         "*** YOUR CODE HERE ***"
+        self.votes += self.popularity // 10
+        self.popularity += self.popularity // 10
+        other.popularity -= other.popularity // 10
 
     def choose(self, other):
         return self.speech
@@ -101,6 +112,11 @@ class Game:
     def play(self):
         while not self.game_over():
             "*** YOUR CODE HERE ***"
+            if self.turn % 2 != 0:
+                (self.p2).choose(self.p1)(self.p1)
+            else:
+                (self.p1).choose(self.p2)(self.p2)
+            self.turn += 1
         return self.winner()
 
     def game_over(self):
@@ -108,7 +124,12 @@ class Game:
 
     def winner(self):
         "*** YOUR CODE HERE ***"
-
+        if self.p1.votes > self.p2.votes:
+            return self.p1    
+        if self.p1.votes < self.p2.votes:
+            return self.p2
+        else:
+            return None
 
 ### Phase 3: New Players
 class AggressivePlayer(Player):
@@ -131,6 +152,10 @@ class AggressivePlayer(Player):
     """
     def choose(self, other):
         "*** YOUR CODE HERE ***"
+        if self.popularity <= other.popularity:
+            return self.debate
+        else:
+            return self.speech
 
 class CautiousPlayer(Player):
     """
@@ -148,6 +173,10 @@ class CautiousPlayer(Player):
     """
     def choose(self, other):
         "*** YOUR CODE HERE ***"
+        if self.popularity == 0:
+            return self.debate
+        else:
+            return self.speech
 
 
 def add_d_leaves(t, v):
@@ -213,6 +242,12 @@ def add_d_leaves(t, v):
         10
     """
     "*** YOUR CODE HERE ***"
+    def add_leaves(t, d):
+        for b in t.branches:
+            add_leaves(b, d+1)
+        t.branches.extend([Tree(v) for _ in range(d)])
+    add_leaves(t, 0)
+            
 
 
 def level_mutation_link(t, funcs):
@@ -232,16 +267,16 @@ def level_mutation_link(t, funcs):
 	>>> t3    # Level 0: 1+1=2; Level 1: 2*5=10; no further levels, so apply remaining z ** 2: 10**2=100
 	Tree(2, [Tree(100)])
 	"""
-	if _____________________:
+	if funcs is Link.empty:
 		return
-	t.label = _____________________
-	remaining = _____________________
-	if __________________ and __________________:
-		while _____________________:
-			_____________________
+	t.label = funcs.first(t.label)
+	remaining = funcs.rest
+	if t.is_leaf() == True and remaining is not Link.empty:
+		while remaining is not Link.empty:
+			t.label = remaining.first(t.label)
 			remaining = remaining.rest
 	for b in t.branches:
-		_____________________
+		level_mutation_link(b, remaining)
 
 
 def store_digits(n):
@@ -262,7 +297,11 @@ def store_digits(n):
     >>> print("Do not use str or reversed!") if any([r in cleaned for r in ["str", "reversed"]]) else None
     """
     "*** YOUR CODE HERE ***"
-
+    store_digits_link = Link.empty
+    while n > 0:
+        store_digits_link = Link(n % 10, store_digits_link)
+        n //= 10
+    return store_digits_link
 
 def deep_map_mut(func, lnk):
     """Mutates a deep link lnk by replacing each item found with the
@@ -284,6 +323,14 @@ def deep_map_mut(func, lnk):
     <9 <16> 25 36>
     """
     "*** YOUR CODE HERE ***"
+    if isinstance(lnk.first, Link) == True:
+        deep_map_mut(func, lnk.first)
+        deep_map_mut(func, lnk.rest)
+    elif lnk.rest == Link.empty:
+        lnk.first = func(lnk.first)
+    else:
+        lnk.first = func(lnk.first)
+        deep_map_mut(func, lnk.rest)
 
 
 def crispr_gene_insertion(lnk_of_genes, insert):
