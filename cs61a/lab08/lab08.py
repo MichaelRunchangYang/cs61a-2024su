@@ -12,6 +12,12 @@ def cumulative_mul(t):
     Tree(5040, [Tree(60, [Tree(3), Tree(4), Tree(5)]), Tree(42, [Tree(7)])])
     """
     "*** YOUR CODE HERE ***"
+    if Tree.is_leaf(t) == True:
+        None
+    else:
+        for b in t.branches:
+            cumulative_mul(b)
+            t.label *= b.label
 
 
 def delete(t, x):
@@ -34,13 +40,13 @@ def delete(t, x):
     Tree(1, [Tree(4), Tree(5), Tree(3, [Tree(6)]), Tree(6), Tree(7), Tree(8), Tree(4)])
     """
     new_branches = []
-    for _________ in ________________:
-        _______________________
+    for b in t.branches:
+        delete(b, x)
         if b.label == x:
-            __________________________________
+            new_branches.extend(b.branches)
         else:
-            __________________________________
-    t.branches = ___________________
+            new_branches.append(b)
+    t.branches = new_branches
 
 
 def convert_link(link):
@@ -54,6 +60,18 @@ def convert_link(link):
     []
     """
     "*** YOUR CODE HERE ***"
+    link_list = []
+    if link == Link.empty:
+        return link_list
+    while link.rest is not Link.empty:
+        if type(link.first) == Link:
+            link_list.append(convert_link(link.first))
+            link = link.rest
+        else:
+            link_list.append(link.first)
+            link = link.rest
+    link_list.append(link.first)
+    return link_list
 
 
 def add_links(link1, link2):
@@ -69,6 +87,13 @@ def add_links(link1, link2):
     <3 4 5 1 2>
     """
     "*** YOUR CODE HERE ***"
+    link = Link(link1.first, link1.rest)
+    if link.rest == Link.empty:
+        link.rest = link2
+        return link
+    else:
+        link.rest = add_links(link.rest, link2)
+        return link
 
 
 def multiply_lnks(lst_of_lnks):
@@ -170,4 +195,3 @@ class Link:
             string += str(self.first) + ' '
             self = self.rest
         return string + str(self.first) + '>'
-
